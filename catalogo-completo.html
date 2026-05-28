@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TuPlantaPR - Catálogo de Potencia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #1a1a1a;
+            --color-secondary: #333333;
+            --color-accent: #cc0000;
+            --color-solar: #cc0000;
+            --color-gasolina: #990000;
+            --color-otro: #ff0000;
+            --color-light: #f5f5f5;
+            --color-dark: #0d0d0d;
+            --color-success: #cc0000;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            background: linear-gradient(135deg, #1f1f1f 0%, #0f0f0f 100%);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .categoria-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .categoria-tab {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            font-size: 1.1rem;
+        }
+
+        .categoria-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .categoria-tab.active {
+            color: white;
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .categoria-tab.solar.active {
+            background: linear-gradient(135deg, #cc0000 0%, #ff3333 100%);
+        }
+
+        .categoria-tab.gasolina.active {
+            background: linear-gradient(135deg, #990000 0%, #cc0000 100%);
+        }
+
+        .categoria-tab.otro.active {
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+        }
+
+        .categoria-contenido {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .categoria-contenido.activo {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .categoria-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding: 2rem;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .categoria-header.solar {
+            background: linear-gradient(135deg, #cc0000 0%, #ff3333 100%);
+        }
+
+        .categoria-header.gasolina {
+            background: linear-gradient(135deg, #990000 0%, #cc0000 100%);
+        }
+
+        .categoria-header.otro {
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+        }
+
+        .categoria-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .productos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .producto-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            padding: 2rem;
+        }
+
+        .producto-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-8px);
+        }
+
+        .producto-titulo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 0.8rem;
+            border-bottom: 3px solid var(--color-accent);
+            padding-bottom: 0.6rem;
+        }
+
+        .potencia-info {
+            background: var(--color-light);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .potencia-info strong {
+            color: var(--color-primary);
+        }
+
+        .ver-mas {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.7rem 1.5rem;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .ver-mas:hover {
+            background: var(--color-secondary);
+            transform: translateX(4px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+        }
+
+        .modal.activo {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .modal-contenido {
+            background: white;
+            border-radius: 12px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: var(--shadow-hover);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 2px solid var(--color-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .modal-header h2 {
+            color: var(--color-primary);
+            font-size: 1.8rem;
+            flex: 1;
+        }
+
+        .cerrar-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .cerrar-modal:hover {
+            color: var(--color-primary);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .seccion-modal {
+            margin-bottom: 2rem;
+        }
+
+        .seccion-modal h3 {
+            color: var(--color-primary);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--color-accent);
+            padding-bottom: 0.5rem;
+        }
+
+        .especificacion {
+            display: flex;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--color-light);
+            font-size: 0.95rem;
+        }
+
+        .especificacion:last-child {
+            border-bottom: none;
+        }
+
+        .especificacion-label {
+            font-weight: 600;
+            min-width: 180px;
+            color: var(--color-dark);
+        }
+
+        .especificacion-valor {
+            color: #555;
+            flex: 1;
+        }
+
+        .aplicaciones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .aplicacion-item {
+            background: var(--color-light);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-success);
+        }
+
+        .aplicacion-nombre {
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+        }
+
+        .aplicacion-potencia {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .aplicacion-cantidad {
+            font-size: 0.85rem;
+            color: var(--color-success);
+            font-weight: 600;
+            margin-top: 0.3rem;
+        }
+
+        .nota-simultaneas {
+            background: #e3f2fd;
+            border-left: 4px solid var(--color-secondary);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--color-dark);
+        }
+
+        footer {
+            background: #0d0d0d;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            border-top: 3px solid #cc0000;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .categoria-tabs {
+                flex-direction: column;
+            }
+
+            .categoria-tab {
+                width: 100%;
+            }
+
+            .productos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-header {
+                flex-direction: column;
+            }
+
+            .aplicaciones-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>☀️ TuPlantaPR</h1>
+        <p>Sistemas de Energía Solar y Generadores | Especificaciones y Aplicaciones Reales</p>
+    </header>
+
+    <div class="container">
+        <div class="categoria-tabs">
+            <button class="categoria-tab solar active" onclick="cambiarCategoria('solar')">
+                ☀️ ENERGÍA SOLAR
+            </button>
+            <button class="categoria-tab gasolina" onclick="cambiarCategoria('gasolina')">
+                ⛽ GASOLINA
+            </button>
+            <button class="categoria-tab otro" onclick="cambiarCategoria('otro')">
+                🔧 OTROS
+            </button>
+        </div>
+
+        <div id="solar" class="categoria-contenido activo">
+            <div class="categoria-header solar">
+                <h2>☀️ SISTEMAS DE ENERGÍA SOLAR</h2>
+                <p>Soluciones silenciosas y sostenibles</p>
+            </div>
+            <div class="productos-grid" id="grid-solar"></div>
+        </div>
+
+        <div id="gasolina" class="categoria-contenido">
+            <div class="categoria-header gasolina">
+                <h2>⛽ SISTEMAS CON GASOLINA</h2>
+                <p>Potencia máxima para cualquier situación</p>
+            </div>
+            <div class="productos-grid" id="grid-gasolina"></div>
+        </div>
+
+        <div id="otro" class="categoria-contenido">
+            <div class="categoria-header otro">
+                <h2>🔧 OTROS PRODUCTOS</h2>
+                <p>Accesorios y complementos</p>
+            </div>
+            <div class="productos-grid" id="grid-otro"></div>
+        </div>
+    </div>
+
+    <div id="modalProducto" class="modal">
+        <div class="modal-contenido">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Producto</h2>
+                <button class="cerrar-modal" onclick="cerrarModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="seccion-modal">
+                    <h3>Especificaciones Técnicas</h3>
+                    <div id="modalEspecificaciones"></div>
+                </div>
+                <div class="seccion-modal">
+                    <h3>Ejemplos de Carga Simultánea Realista</h3>
+                    <div class="nota-simultaneas">
+                        ⚡ Estos ejemplos muestran combinaciones REALES de equipos que se pueden encender al mismo tiempo.
+                    </div>
+                    <div class="aplicaciones-grid" id="modalAplicaciones"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 TuPlantaPR | Sistemas de Energía Solar y Generadores | Bayamón, Puerto Rico</p>
+    </footer>
+
+    <script>
+        const productos = {
+            solar: [
+                {
+                    id: 1,
+                    titulo: "Batería LUCAS GAA 3000 + Placa Solar 200W",
+                    potencia: "3,000W arranque / 2,200W continuo",
+                    especificaciones: {
+                        "Capacidad": "3,072Wh",
+                        "Potencia continua": "2,200W",
+                        "Potencia arranque": "3,000W",
+                        "Tipo batería": "LiFePO₄",
+                        "Panel solar": "200W incluido",
+                        "Ciclos vida": "2,500 ciclos al 80%",
+                        "Garantía": "10 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 5,000 BTU + TV 32\" + Luces", potencia: "1,600W total", cantidad: "Simultáneo" },
+                        { nombre: "Refrigerador + Luces + Ventilador", potencia: "700W", cantidad: "Simultáneo" },
+                        { nombre: "2 Laptops + Cargadores", potencia: "300W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 5,000 BTU (solo)", potencia: "1,465W", cantidad: "1 unidad" },
+                        { nombre: "Bombillos LED + Múltiples cargadores", potencia: "200W", cantidad: "Ilimitado" }
+                    ]
+                },
+                {
+                    id: 2,
+                    titulo: "Batería SUNBEAT 1,200W Portátil",
+                    potencia: "1,000W continuo",
+                    especificaciones: {
+                        "Potencia continua": "1,000W",
+                        "Capacidad": "1,050Wh",
+                        "Tipo": "Batería portátil",
+                        "Cero emisiones": "Sí",
+                        "Carga rápida": "3 horas"
+                    },
+                    aplicaciones: [
+                        { nombre: "TV 32\" + Luz LED", potencia: "150W", cantidad: "Simultáneo" },
+                        { nombre: "Refrigerador pequeño", potencia: "500W", cantidad: "1 unidad" },
+                        { nombre: "Laptop + Cargador", potencia: "150W", cantidad: "Simultáneo" },
+                        { nombre: "Microondas (uso corto)", potencia: "1,000W", cantidad: "Limitado" },
+                        { nombre: "Ventilador + Bombillos", potencia: "150W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 3,
+                    titulo: "BLUETTI AC180 1,800W + Placa Solar 200W",
+                    potencia: "1,800W continuo",
+                    especificaciones: {
+                        "Potencia continua": "1,800W",
+                        "Capacidad": "1,152Wh - 1,440Wh",
+                        "Panel solar": "200W incluido",
+                        "Tipo batería": "LiFePO₄",
+                        "Salidas": "11 puertos",
+                        "Ciclos vida": "3,500+ ciclos",
+                        "Garantía": "2 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 6,000 BTU + TV 32\"", potencia: "1,750W", cantidad: "Simultáneo" },
+                        { nombre: "Refrigerador + TV + Luces", potencia: "1,200W", cantidad: "Simultáneo" },
+                        { nombre: "Lavadora + Luces", potencia: "600W", cantidad: "Simultáneo" },
+                        { nombre: "Microondas + Cafetera (alternado)", potencia: "2,000W", cantidad: "No simultáneo" },
+                        { nombre: "2 Laptops + Periféricos", potencia: "900W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 4,
+                    titulo: "Batería LUCAS GAA 7000W | 5,040Wh",
+                    potencia: "4,000W nominal / 7,000W pico",
+                    especificaciones: {
+                        "Capacidad": "5,040Wh",
+                        "Potencia nominal": "4,000W",
+                        "Potencia pico": "7,000W",
+                        "Voltaje": "48V DC",
+                        "Tipo": "LiFePO₄",
+                        "Carga AC": "1.3 - 1.8 horas",
+                        "Garantía": "4 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 12,000 BTU + TV 42\" + Luces", potencia: "3,800W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 10,000 BTU + Refrigerador + Luces", potencia: "3,500W", cantidad: "Simultáneo" },
+                        { nombre: "Estufa (1 quemador) + TV + Luces", potencia: "2,300W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 12,000 BTU (solo)", potencia: "3,517W", cantidad: "1 unidad" },
+                        { nombre: "Horno pequeño (1,500W) + Luces", potencia: "1,800W", cantidad: "Simultáneo" }
+                    ]
+                }
+            ],
+            gasolina: [
+                {
+                    id: 5,
+                    titulo: "A-IPOWER GXS7100IRD | 7,100W Inverter",
+                    potencia: "7,100W arranque / 5,700W continuo",
+                    especificaciones: {
+                        "Potencia arranque": "7,100W",
+                        "Potencia continua": "5,700W",
+                        "Motor": "322cc OHV",
+                        "Tanque": "3.6 galones",
+                        "Silencioso": "65 dBA",
+                        "Autonomía": "9 horas",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 20,000 BTU + TV + Refrigerador", potencia: "5,700W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 18,000 BTU + Microondas + Luces", potencia: "5,400W", cantidad: "Simultáneo" },
+                        { nombre: "Estufa (2 quemadores) + Aire 5,000 BTU + Luces", potencia: "4,500W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 20,000 BTU (solo)", potencia: "5,858W", cantidad: "1 unidad" },
+                        { nombre: "Horno (2,000W) + Aire 12,000 BTU", potencia: "5,500W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 6,
+                    titulo: "iPower SUA4000IED | 4,000W Dual Fuel",
+                    potencia: "4,000W arranque / 3,500W continuo",
+                    especificaciones: {
+                        "Potencia continuo": "3,500W",
+                        "Potencia arranque": "4,000W",
+                        "Motor": "223cc Senci",
+                        "Combustibles": "Gasolina o propano",
+                        "Peso": "106 libras",
+                        "Inversor": "Energía limpia",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 12,000 BTU + TV 42\" + Refrigerador", potencia: "3,800W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 10,000 BTU + Microondas + Luces", potencia: "3,400W", cantidad: "Simultáneo" },
+                        { nombre: "Estufa (1 quemador) + TV + Luces", potencia: "2,300W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 12,000 BTU (solo)", potencia: "3,517W", cantidad: "1 unidad" },
+                        { nombre: "Horno (1,500W) + Aire 5,000 BTU + Luces", potencia: "3,200W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 7,
+                    titulo: "LUCAS JLD5000 | 5,000W Generador",
+                    potencia: "5,000W arranque / 4,000W continuo",
+                    especificaciones: {
+                        "Potencia arranque": "5,000W",
+                        "Potencia continua": "4,000W",
+                        "Voltaje": "120/240V AC",
+                        "Motor": "223cc OHV",
+                        "Tanque": "4 galones",
+                        "Nivel ruido": "68 dBA",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 12,000 BTU + Refrigerador + TV", potencia: "3,900W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 15,000 BTU + Luces", potencia: "4,396W", cantidad: "Simultáneo" },
+                        { nombre: "Estufa (2 quemadores) + Aire 5,000 BTU", potencia: "3,500W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 10,000 BTU + Horno (1,500W) + TV", potencia: "3,400W", cantidad: "Simultáneo" },
+                        { nombre: "Bombeo agua (1 HP) + Aire 5,000 BTU", potencia: "3,400W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 8,
+                    titulo: "GREENMAGIC MG6500DE1 | 6,500W Dual Fuel",
+                    potencia: "6,500W pico / 5,300W continuo (gasolina)",
+                    especificaciones: {
+                        "Potencia gasolina": "5,300W continuo / 6,500W pico",
+                        "Potencia propano": "4,800W continuo / 5,900W pico",
+                        "Dual Fuel": "Gasolina o propano",
+                        "Arranque": "YOYO",
+                        "Autonomía": "8 horas (1 galón)",
+                        "Silencioso": "Operación residencial",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 18,000 BTU + TV + Refrigerador", potencia: "5,500W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 15,000 BTU + Horno (1,500W) + TV", potencia: "5,200W", cantidad: "Simultáneo" },
+                        { nombre: "Estufa (2 quemadores) + Aire 10,000 BTU + TV", potencia: "4,500W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 18,000 BTU (solo)", potencia: "5,275W", cantidad: "1 unidad" },
+                        { nombre: "Bombeo agua (1.5 HP) + Aire 5,000 BTU", potencia: "3,800W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 9,
+                    titulo: "GREENMAGIC MG4500D1 | 4,500W Dual",
+                    potencia: "4,500W pico / 3,500-4,000W continuo",
+                    especificaciones: {
+                        "Potencia pico": "4,800W",
+                        "Potencia continua": "3,500-4,000W",
+                        "Sonido": "63 dBA",
+                        "Inversor": "Energía limpia",
+                        "Alerta CO": "Apagado automático",
+                        "Aplicaciones": "Hogares, camping",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 12,000 BTU + TV + Refrigerador", potencia: "3,800W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 10,000 BTU + Microondas + Luces", potencia: "3,400W", cantidad: "Simultáneo" },
+                        { nombre: "Estufa (1 quemador) + Aire 5,000 BTU + TV", potencia: "2,500W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 12,000 BTU (solo)", potencia: "3,517W", cantidad: "1 unidad" },
+                        { nombre: "Horno (1,500W) + Aire 5,000 BTU + Luces", potencia: "3,100W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 10,
+                    titulo: "PULSAR GX400BN | 4,000W Inverter",
+                    potencia: "4,000W pico / 3,200W continuo",
+                    especificaciones: {
+                        "Potencia continuo": "3,200W",
+                        "Potencia pico": "4,000W",
+                        "Motor": "150cc de alta velocidad",
+                        "Peso": "55 libras",
+                        "Ultra silencioso": "62 dB",
+                        "Transportable": "Sí",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 10,000 BTU + TV + Refrigerador", potencia: "3,100W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 12,000 BTU (solo)", potencia: "3,517W", cantidad: "1 unidad" },
+                        { nombre: "Microondas + TV + Luces", potencia: "1,200W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 8,000 BTU + Refrigerador + TV", potencia: "2,600W", cantidad: "Simultáneo" },
+                        { nombre: "Estufa (1 quemador) + Luces", potencia: "2,100W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 11,
+                    titulo: "PULSAR 2300W | Inverter Silencioso",
+                    potencia: "2,300W arranque / 1,800W continuo",
+                    especificaciones: {
+                        "Potencia continuo": "1,800W",
+                        "Potencia arranque": "2,300W",
+                        "Motor": "80cc OHV",
+                        "Tanque": "1.2 galones",
+                        "Silencioso": "59 dB",
+                        "Peso": "48 libras",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 6,000 BTU + TV 32\"", potencia: "1,750W", cantidad: "Simultáneo" },
+                        { nombre: "Refrigerador + Luces + Ventilador", potencia: "700W", cantidad: "Simultáneo" },
+                        { nombre: "Microondas (uso limitado)", potencia: "1,200W", cantidad: "Corto tiempo" },
+                        { nombre: "Laptop + TV + Cargadores", potencia: "700W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 5,000 BTU + Luces", potencia: "1,600W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 12,
+                    titulo: "PULSAR PG5000BISRCO | 5,000W Dual-Fuel",
+                    potencia: "5,000W pico / 4,000W continuo",
+                    especificaciones: {
+                        "Potencia continuo": "4,000W",
+                        "Potencia pico": "5,000W gasolina / 4,500W propano",
+                        "Modo económico": "Reduce consumo combustible",
+                        "Mango telescópico": "Fácil movilidad",
+                        "Protecciones": "Overload, CO detection",
+                        "Tanque": "3 galones",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 12,000 BTU + Refrigerador + TV", potencia: "3,900W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 15,000 BTU + Luces", potencia: "4,396W", cantidad: "Simultáneo" },
+                        { nombre: "Estufa (1 quemador) + Aire 5,000 BTU + TV", potencia: "2,500W", cantidad: "Simultáneo" },
+                        { nombre: "Horno (1,500W) + Aire 10,000 BTU", potencia: "3,900W", cantidad: "Simultáneo" },
+                        { nombre: "Bombeo agua (1 HP) + Aire 5,000 BTU + TV", potencia: "3,400W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 13,
+                    titulo: "PULSAR NEX60BISRCO | 6,000W Dual Inverter",
+                    potencia: "6,000W pico / 5,400W continuo",
+                    especificaciones: {
+                        "Potencia gasolina": "5,400W / 6,000W pico",
+                        "Potencia propano": "4,600W / 5,400W pico",
+                        "Control": "Auto speed control",
+                        "Sonido": "30% menos que equivalentes",
+                        "Dual Fuel": "Gasolina o propano",
+                        "Paralelo": "Conectar 2 unidades",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 18,000 BTU + TV + Refrigerador", potencia: "5,500W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 18,000 BTU + Luces + Ventilador", potencia: "5,400W", cantidad: "Simultáneo" },
+                        { nombre: "Estufa (2 quemadores) + Aire 10,000 BTU + TV", potencia: "5,000W", cantidad: "Simultáneo" },
+                        { nombre: "Horno (2,000W) + Aire 12,000 BTU + Luces", potencia: "5,500W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 18,000 BTU (solo)", potencia: "5,275W", cantidad: "1 unidad" }
+                    ]
+                },
+                {
+                    id: 14,
+                    titulo: "PULSAR 9500W Trifuel Premium | 7,600W",
+                    potencia: "7,600W (gasolina/propano/gas natural)",
+                    especificaciones: {
+                        "Potencia": "7,600W total",
+                        "Trifuel": "Gasolina, propano o gas natural",
+                        "Motor": "4 tiempos 458cc",
+                        "Voltaje": "240 Voltios",
+                        "Frecuencia": "60 Hz",
+                        "Sensor CO": "Protección CO avanzada",
+                        "Peso": "243 libras"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 24,000 BTU + Refrigerador + TV", potencia: "7,300W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 24,000 BTU (solo)", potencia: "7,032W", cantidad: "1 unidad" },
+                        { nombre: "Aire 20,000 BTU + Horno (2,000W) + TV", potencia: "6,800W", cantidad: "Simultáneo" },
+                        { nombre: "Estufa (3 quemadores) + Aire 12,000 BTU + TV", potencia: "6,500W", cantidad: "Simultáneo" },
+                        { nombre: "Bombeo agua (1.5 HP) + Aire 18,000 BTU", potencia: "7,100W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 15,
+                    titulo: "GENMAX 1,600W | Generador Portátil",
+                    potencia: "1,600W arranque / 1,200W continuo",
+                    especificaciones: {
+                        "Potencia continuo": "1,200W",
+                        "Potencia arranque": "1,600W",
+                        "Motor": "57cc 4-stroke",
+                        "Tanque": "0.63 galones",
+                        "Voltaje": "120V",
+                        "Silencioso": "59 dB",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Microondas + TV 32\"", potencia: "1,100W", cantidad: "Simultáneo" },
+                        { nombre: "Refrigerador pequeño + Luces", potencia: "700W", cantidad: "Simultáneo" },
+                        { nombre: "Laptop + Cargadores + TV", potencia: "500W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 5,000 BTU (solo, limitado)", potencia: "1,465W", cantidad: "Limitado" },
+                        { nombre: "Ventilador + Bombillos LED", potencia: "250W", cantidad: "Múltiples" }
+                    ]
+                },
+                {
+                    id: 16,
+                    titulo: "GM3500IAD | 3,500W Dual Fuel",
+                    potencia: "3,500W gasolina / 3,200W propano",
+                    especificaciones: {
+                        "Potencia continuo": "3,100-3,500W",
+                        "Potencia arranque": "3,500W",
+                        "Motor": "145cc 4-stroke",
+                        "Tanque": "1.7 galones",
+                        "Voltaje": "120V",
+                        "EPA Compliant": "Sí",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 10,000 BTU + TV + Refrigerador", potencia: "3,100W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 12,000 BTU (solo)", potencia: "3,517W", cantidad: "1 unidad" },
+                        { nombre: "Microondas + Cafetera + Luces", potencia: "2,200W", cantidad: "Simultáneo" },
+                        { nombre: "Lavadora + Refrigerador + TV", potencia: "1,500W", cantidad: "Simultáneo" },
+                        { nombre: "Bombeo agua (0.75 HP) + Aire 5,000 BTU", potencia: "2,800W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 17,
+                    titulo: "GENMAX GM4600IAEDC | 4,600W Dual Fuel",
+                    potencia: "4,600W arranque / 3,800W continuo",
+                    especificaciones: {
+                        "Potencia arranque": "4,600W",
+                        "Potencia continuo": "3,800W",
+                        "Motor": "159cc 4 tiempos OHV",
+                        "Dual Fuel": "Gasolina o propano",
+                        "Panel digital": "Pantalla LED",
+                        "Paralelo": "2 generadores en paralelo",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 12,000 BTU + Refrigerador + TV", potencia: "3,800W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 15,000 BTU (solo)", potencia: "4,396W", cantidad: "1 unidad" },
+                        { nombre: "Estufa (1 quemador) + Aire 5,000 BTU + TV", potencia: "2,500W", cantidad: "Simultáneo" },
+                        { nombre: "Horno (1,500W) + Aire 10,000 BTU", potencia: "3,900W", cantidad: "Simultáneo" },
+                        { nombre: "Lavadora + Aire 5,000 BTU + Luces", potencia: "2,100W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 18,
+                    titulo: "CHAMPION 6250W | Dual Fuel Premium",
+                    potencia: "6,250W gasolina / 5,600W propano",
+                    especificaciones: {
+                        "Potencia continuo": "6,250W gasolina / 5,600W propano",
+                        "Potencia arranque": "7,850W gasolina / 7,050W propano",
+                        "Motor": "389cc OHV",
+                        "Autonomía": "11 horas (50% carga)",
+                        "Tanque": "7.7 galones",
+                        "CO Shield": "Protección avanzada",
+                        "Garantía": "3 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 20,000 BTU + Horno (1,500W) + TV", potencia: "6,000W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 18,000 BTU + Estufa (1 quemador) + TV", potencia: "5,800W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 20,000 BTU + Refrigerador + Luces", potencia: "6,200W", cantidad: "Simultáneo" },
+                        { nombre: "Bombeo agua (1.5 HP) + Aire 18,000 BTU", potencia: "6,000W", cantidad: "Simultáneo" },
+                        { nombre: "Casa pequeña (sistema esencial)", potencia: "5,500-6,000W", cantidad: "Equipos básicos" }
+                    ]
+                },
+                {
+                    id: 19,
+                    titulo: "LUCAS INVERTER GAA 5000W | 110V-30A",
+                    potencia: "5,000W arranque / 4,000W continuo",
+                    especificaciones: {
+                        "Potencia arranque": "5,000W",
+                        "Potencia continuo": "4,000W",
+                        "Voltaje": "110V - 30A",
+                        "Silencioso": "62 dBA",
+                        "Panel digital": "Monitoreo inteligente",
+                        "Peso": "58 libras",
+                        "Garantía": "4 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 12,000 BTU + Refrigerador + TV", potencia: "3,800W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 15,000 BTU + Luces", potencia: "4,396W", cantidad: "Simultáneo" },
+                        { nombre: "Estufa (2 quemadores) + Aire 5,000 BTU + TV", potencia: "3,500W", cantidad: "Simultáneo" },
+                        { nombre: "Horno (1,500W) + Aire 10,000 BTU + Luces", potencia: "4,000W", cantidad: "Simultáneo" },
+                        { nombre: "Bombeo agua (1 HP) + Aire 5,000 BTU + TV", potencia: "3,500W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 20,
+                    titulo: "LUCAS Black Edition | 7,000W Multi-Voltaje",
+                    potencia: "7,000W arranque / 5,000W continuo",
+                    especificaciones: {
+                        "Potencia arranque": "7,000W",
+                        "Potencia continuo": "5,000W",
+                        "Voltaje": "110/120/220/230/240V",
+                        "Motor": "223cc OHV",
+                        "Tanque": "2.91 galones",
+                        "Arranque": "Cuerda / Eléctrico",
+                        "Garantía": "4 años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 18,000 BTU + Horno (1,500W) + TV", potencia: "5,300W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 20,000 BTU + Refrigerador + Luces", potencia: "5,800W", cantidad: "Simultáneo" },
+                        { nombre: "Estufa (2 quemadores) + Aire 12,000 BTU + TV", potencia: "5,000W", cantidad: "Simultáneo" },
+                        { nombre: "Bombeo agua (1.5 HP) + Aire 10,000 BTU + TV", potencia: "4,500W", cantidad: "Simultáneo" },
+                        { nombre: "Casa pequeña (sistema mixto)", potencia: "4,500-5,000W", cantidad: "Equipos completos" }
+                    ]
+                }
+            ],
+            otro: [
+                {
+                    id: 21,
+                    titulo: "Galones de Combustible (G-2, G-5, G-15, G-20, G-31)",
+                    potencia: "N/A",
+                    especificaciones: {
+                        "Capacidades": "G-2, G-5, G-15, G-20, G-31",
+                        "Material": "Plástico resistente",
+                        "Uso": "Almacenamiento gasolina",
+                        "Seguridad": "Certificado",
+                        "Portabilidad": "Múltiples tamaños",
+                        "Aplicación": "Generadores y equipos"
+                    },
+                    aplicaciones: [
+                        { nombre: "Almacenamiento combustible", potencia: "N/A", cantidad: "Según galón" },
+                        { nombre: "Reemplazo tanques dañados", potencia: "N/A", cantidad: "1 unidad" },
+                        { nombre: "Combustible de emergencia", potencia: "N/A", cantidad: "Múltiples" },
+                        { nombre: "Transporte seguro gasolina", potencia: "N/A", cantidad: "Según necesidad" }
+                    ]
+                },
+                {
+                    id: 22,
+                    titulo: "ZENDURE Generador 3,600W SMART",
+                    potencia: "3,600W",
+                    especificaciones: {
+                        "Potencia": "3,600W",
+                        "Combustible": "Gasolina",
+                        "Inverter": "Inteligente",
+                        "Modo inteligente": "Wi-Fi conectado",
+                        "Nivel ruido": "Bajo",
+                        "Modos": "ECO y Normal",
+                        "Garantía": "3+ años"
+                    },
+                    aplicaciones: [
+                        { nombre: "Aire 10,000 BTU + TV + Refrigerador", potencia: "3,100W", cantidad: "Simultáneo" },
+                        { nombre: "Aire 12,000 BTU (solo)", potencia: "3,517W", cantidad: "1 unidad" },
+                        { nombre: "Estufa (1 quemador) + Aire 5,000 BTU", potencia: "2,500W", cantidad: "Simultáneo" }
+                    ]
+                },
+                {
+                    id: 23,
+                    titulo: "Accesorios Generales TuPlantaPR",
+                    potencia: "Varía por accesorio",
+                    especificaciones: {
+                        "Tipos": "Cables, conectores, adaptadores",
+                        "Para": "Todos los productos",
+                        "Compatibilidad": "Universal",
+                        "Disponibilidad": "Centro servicio Bayamón",
+                        "Garantía": "Según producto",
+                        "Calidad": "Premium"
+                    },
+                    aplicaciones: [
+                        { nombre: "Extensiones de cables", potencia: "Hasta capacidad equipo", cantidad: "1+ unidades" },
+                        { nombre: "Adaptadores de voltaje", potencia: "Varía", cantidad: "Según necesidad" },
+                        { nombre: "Protectores de sobrecarga", potencia: "Protección total", cantidad: "1+ unidades" }
+                    ]
+                }
+            ]
+        };
+
+        function renderizarProductos(categoria) {
+            const grid = document.getElementById(`grid-${categoria}`);
+            grid.innerHTML = '';
+            
+            productos[categoria].forEach(prod => {
+                const card = document.createElement('div');
+                card.className = 'producto-card';
+                card.innerHTML = `
+                    <div class="producto-titulo">${prod.titulo}</div>
+                    <div class="potencia-info">
+                        <strong>Potencia:</strong> ${prod.potencia}
+                    </div>
+                    <button class="ver-mas" onclick="abrirModal(${prod.id}, '${categoria}')">
+                        Ver detalles →
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function cambiarCategoria(categoria) {
+            document.querySelectorAll('.categoria-contenido').forEach(el => {
+                el.classList.remove('activo');
+            });
+            
+            document.querySelectorAll('.categoria-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(categoria).classList.add('activo');
+            event.target.classList.add('active');
+        }
+
+        function abrirModal(id, categoria) {
+            const prod = productos[categoria].find(p => p.id === id);
+            if (!prod) return;
+            
+            document.getElementById('modalTitulo').textContent = prod.titulo;
+            
+            const especsDiv = document.getElementById('modalEspecificaciones');
+            especsDiv.innerHTML = '';
+            
+            for (const [label, valor] of Object.entries(prod.especificaciones)) {
+                const spec = document.createElement('div');
+                spec.className = 'especificacion';
+                spec.innerHTML = `
+                    <div class="especificacion-label">${label}:</div>
+                    <div class="especificacion-valor">${valor}</div>
+                `;
+                especsDiv.appendChild(spec);
+            }
+
+            const aplicDiv = document.getElementById('modalAplicaciones');
+            aplicDiv.innerHTML = '';
+
+            prod.aplicaciones.forEach(app => {
+                const appItem = document.createElement('div');
+                appItem.className = 'aplicacion-item';
+                appItem.innerHTML = `
+                    <div class="aplicacion-nombre">⚡ ${app.nombre}</div>
+                    <div class="aplicacion-potencia">Potencia: ${app.potencia}</div>
+                    <div class="aplicacion-cantidad">${app.cantidad}</div>
+                `;
+                aplicDiv.appendChild(appItem);
+            });
+            
+            document.getElementById('modalProducto').classList.add('activo');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalProducto').classList.remove('activo');
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalProducto');
+            if (event.target === modal) {
+                modal.classList.remove('activo');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderizarProductos('solar');
+            renderizarProductos('gasolina');
+            renderizarProductos('otro');
+        });
+    </script>
+</body>
+</html>
